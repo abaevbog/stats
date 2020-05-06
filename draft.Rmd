@@ -10,6 +10,7 @@ library(caret)
 library(rpart)
 require(mosaic)
 require(gtools)
+require(rpart.plot)
 ```
 
 ```{r setup, include=FALSE}
@@ -37,9 +38,7 @@ printcp(fit)
 plotcp(fit) 
 summary(fit) 
 
-plot(fit, uniform=TRUE, 
-   main="Tree")
-text(fit, use.n=TRUE, all=TRUE, cex=.8)
+rpart.plot(fit, box.palette = list("lightblue", "pink"))
 
 ```
 
@@ -114,12 +113,26 @@ nine_result = check_combs(nine)
 ```
 
 
+```{r, echo=TRUE}
+main_test = function(results, number){
+  best_model = results[c(1:number)]
+  model = glm(as.formula(paste("Red_Won", "~", paste(best_model, collapse = "+"),sep ="")) , data = train, family=binomial(link = "logit"))
+  predictions = predict(model, test)
+  predictions = predictions > 0.5
+  expected = test$Red_Won
+  explained = sum(predictions == expected)
+  explained 
+}
+```
+
 ```{r}
-best_model = four_result[c(1:4)]
-model = glm(as.formula(paste("Red_Won", "~", paste(best_model, collapse = "+"),sep ="")) , data = train, family=binomial(link = "logit"))
-predictions = predict(model, test)
-predictions = predictions > 0.5
-expected = test$Red_Won
-explained = sum(predictions == expected)
-print(explained / length(test$Red_Won))
+main_test(one_result,1) 
+main_test(two_result,2) 
+main_test(three_result,3) 
+main_test(four_result ,4)
+main_test(five_result  ,5)
+main_test(six_result ,6)
+main_test(seven_result,7) 
+main_test(eight_result,8)
+main_test(nine_result ,9)
 ```
